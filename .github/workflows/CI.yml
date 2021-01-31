@@ -1,0 +1,43 @@
+name: Node CI
+
+on: push
+
+jobs:
+  buildAndTest:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x, 15.x]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install, build, test
+        run: |
+
+          npm install yarn -g
+          yarn
+
+          yarn run docker:test
+        env:
+          CI: true
+
+  checkCodestyle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: '8.x'
+      - name: Install and check codestyle
+        run: |
+          npm install yarn -g
+          yarn
+          yarn run lint
+        env:
+          CI: true
